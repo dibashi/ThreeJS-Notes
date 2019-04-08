@@ -486,12 +486,13 @@ THREE.Object3D.prototype = {
 
 	}(),
 	/**
-	 * @desc 对象(参数object),设置为当前对象的子对象
+	 * @desc 对象(参数object),设置为当前对象的子对象,可以添加对象组
 	 * @param {THREE.Object3D} object
 	 * @returns {THREE.Object3D}
 	 */
 	add: function ( object ) {
 
+		//如果参数大于1个，就一个一个的调用此函数来添加对象
 		if ( arguments.length > 1 ) {
 
 			for ( var i = 0; i < arguments.length; i++ ) {
@@ -547,6 +548,9 @@ THREE.Object3D.prototype = {
 
 			}
 
+			//这里不return？？？ 对象组已经被删除光了，再删除第一个没有任何意义虽然不会执行，语义上要return
+			//lh添加
+			return;
 		}
 
 		var index = this.children.indexOf( object );
@@ -563,10 +567,10 @@ THREE.Object3D.prototype = {
 
 	},
 	/**
-	 * @deprecated 改为getObjectByName()
+	 * @deprecated 改为getObjectByName(),因为可能查找其子子节点，getChildByName容易引起歧义。
 	 * @desc 通过name获得子对象
 	 * @param {String} name
-	 * @param {boolean} recursive 默认为false,表示不才查找子对象的子对象
+	 * @param {boolean} recursive 默认为false,表示不递归查找
 	 * @returns {THREE.Object3D}
 	 */
 	getChildByName: function ( name, recursive ) {
@@ -607,8 +611,32 @@ THREE.Object3D.prototype = {
 	 * @param {boolean} recursive 默认为false,表示不才查找子对象的子对象
 	 * @returns {THREE.Object3D}
 	 */
-	getObjectByName: function ( name, recursive ) {
+	/**
+	 * 更加通用的实现
+	 * getObjectByProperty: function ( name, value ) {
 
+		if ( this[ name ] === value ) return this;
+
+		for ( var i = 0, l = this.children.length; i < l; i ++ ) {
+
+			var child = this.children[ i ];
+			var object = child.getObjectByProperty( name, value );
+
+			if ( object !== undefined ) {
+
+				return object;
+
+			}
+
+		}
+
+		return undefined;
+
+	},
+
+	 */
+	getObjectByName: function ( name, recursive ) {
+		//这个函数实现有问题 recursive没有用过 wtf！
 		if ( this.name === name ) return this;
 
 		for ( var i = 0, l = this.children.length; i < l; i ++ ) {
@@ -740,8 +768,8 @@ THREE.Object3D.prototype = {
 	 * @desc 遍历当前对象以及子对象并且应用callback方法
 	 * @param {requestCallback} callback
 	 */
-	traverse: function ( callback ) {
-
+	traverse: function ( callback ) { //先序遍历
+		//先改变（回调函数一般都要改变对象的属性）的是父对象，然后是子对象 
 		callback( this );
 
 		for ( var i = 0, l = this.children.length; i < l; i ++ ) {
