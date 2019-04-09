@@ -72,6 +72,7 @@ THREE.Object3D = function () {
 	 * @type {THREE.Vector3}
 	 */
 	var scale = new THREE.Vector3( 1, 1, 1 );
+	//同步rotation与quaternion
 	/**
 	 * @desc 给对象的rotation属性绑定setFromEuler()方法<br />
 	 * 当rotation属性值更改,调用setFromEuler()方法
@@ -80,8 +81,8 @@ THREE.Object3D = function () {
 		quaternion.setFromEuler( rotation, false );
 	};
 	/**
-	 * @desc 给对象的rotation属性绑定setFromQuaternion()方法<br />
-	 * 当rotation属性值更改,调用setFromEuler()方法
+	 * @desc 给对象的quaternion属性绑定setFromQuaternion()方法<br />
+	 * 当quaternion属性值更改,setFromQuaternion()方法
 	 */
 	var onQuaternionChange = function () {
 		rotation.setFromQuaternion( quaternion, undefined, false );
