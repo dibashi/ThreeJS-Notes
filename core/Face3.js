@@ -21,7 +21,11 @@
  * @constructor
  */
 THREE.Face3 = function ( a, b, c, normal, color, materialIndex ) {
-
+	/**
+	 * 仔细想想这个对象的数据量还是蛮大的，3个顶点索引，3个法线向量，3个颜色向量，一个材质索引
+	 * 
+	 */
+	//之前的注释是vector3，应该是int吧
 	/**
 	 * @desc 顶点a
 	 * @type {THREE.Vector3}
@@ -60,6 +64,9 @@ THREE.Face3 = function ( a, b, c, normal, color, materialIndex ) {
 	 */
 	this.vertexColors = color instanceof Array ? color : [];
 
+	/**
+	 * 这个数据很吊的，主要是为了将来的凹凸映射所需的数据？到时候再来注释
+	 */
 	/**
 	 * @desc 顶点正切数组
 	 * @type {Array}

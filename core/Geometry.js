@@ -35,6 +35,7 @@ THREE.Geometry = function () {
 	 * 若要更新this.vertices属性,需要将 Geometry.verticesNeedUpdat设置为true
 	 * @type {THREE.Vector3[]}
 	 */
+	//顶点若更新，需要重传gpu，其次 法线向量也需要重新计算
 	this.vertices = [];
 	/**
 	 * @desc 几何体顶点颜色列表，和索引一对一<br />
@@ -45,7 +46,7 @@ THREE.Geometry = function () {
 	/**
 	 * @desc 几何体三角面数组<br />
 	 * 将Geometry对象的三角面存放在this.faces属性中,该属性是一个数组,初始化为空数组.这个数组描述在模型中每个顶点式怎样彼此连接的<br/>
-	 * 如果要更新this.faces属性,需要将Geometry.elementsNeedUpdate 设置为true
+	 * 如果要更新this.faces属性,需要将Geometry.elementsNeedUpdate 设置为true！！！！！很关键 可见threejs为了性能加入了大量的判断变量！！！
 	 * @type {THREE.Face3[]}
 	 */
 	this.faces = [];
@@ -55,7 +56,11 @@ THREE.Geometry = function () {
 	 * 如果要更新this.faceVertexUvs的值,需要将Geometry.uvsNeedUpdate属性设置为true
 	 * @type {THREE.Vector2[]}
 	 */
-	this.faceVertexUvs = [ [] ];
+	this.faceVertexUvs = [ [] ];//纹理映射需要的数据，这里的结构需要将来打印下看看
+
+	/**
+	 * 以下是蒙皮动画算法中需要用到的数据，比较复杂，以后研究透了来写！
+	 */
 	/**
 	 * @desc 变形顶点数组,每个变形顶点都是一个javascript对象<br />
 	 * { name: "targetName", vertices: [ new THREE.Vector3(), ... ] }
@@ -178,6 +183,8 @@ THREE.Geometry.prototype = {
 	 * 更新geometry中的所有顶点坐标和表面的法线向量，所做的实际上是用变换矩阵matrix对geometry形体进行空间变换<br />
 	 * @param {THREE.Matrix4} matrix
 	 */
+
+	 //奇怪，这些为什么不放在着色器中去计算？ 估计是为了本地变换几何体，这个矩阵并不想作为他的模型矩阵？
 	applyMatrix: function ( matrix ) {
 		// normalMatrix是参数matrix左上角3×3矩阵的逆转置矩阵，该矩阵用来旋转矢量（法线，而不是顶点坐标）
 		var normalMatrix = new THREE.Matrix3().getNormalMatrix( matrix );

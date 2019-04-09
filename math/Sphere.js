@@ -116,13 +116,13 @@ THREE.Sphere.prototype = {
 	},
 
 	/**
-	 * @desc 点到球心的距离
+	 * @desc 点到球心的距离 <---原注释有误
 	 * @param {THREE.Vector3} point
 	 * @returns {float}
 	 */
 	distanceToPoint: function ( point ) {
 
-		return ( point.distanceTo( this.center ) - this.radius );
+		return ( point.distanceTo( this.center ) - this.radius );//为什么要减去半径？看来并不是到球心
 
 	},
 	/**
@@ -134,7 +134,7 @@ THREE.Sphere.prototype = {
 
 		var radiusSum = this.radius + sphere.radius;
 
-		return sphere.center.distanceToSquared( this.center ) <= ( radiusSum * radiusSum );
+		return sphere.center.distanceToSquared( this.center ) <= ( radiusSum * radiusSum );//为了性能作者并没有开方
 
 	},
 	/**
@@ -144,7 +144,7 @@ THREE.Sphere.prototype = {
 	 * @param {THREE.Vector3} optionalTarget
 	 * @returns {THREE.Vector3}
 	 */
-	clampPoint: function ( point, optionalTarget ) {
+	clampPoint: function ( point, optionalTarget ) {//没见有地方用到，先不看了 头晕这会
 
 		var deltaLengthSq = this.center.distanceToSquared( point );
 
@@ -172,7 +172,7 @@ THREE.Sphere.prototype = {
 		var box = optionalTarget || new THREE.Box3();
 
 		box.set( this.center, this.center );
-		box.expandByScalar( this.radius );
+		box.expandByScalar( this.radius );//妙极了！！！
 
 		return box;
 
@@ -186,7 +186,7 @@ THREE.Sphere.prototype = {
 	applyMatrix4: function ( matrix ) {
 
 		this.center.applyMatrix4( matrix );
-		this.radius = this.radius * matrix.getMaxScaleOnAxis();
+		this.radius = this.radius * matrix.getMaxScaleOnAxis();//好吧，作者很严谨 缩放比例不一致都考虑进去了
 
 		return this;
 

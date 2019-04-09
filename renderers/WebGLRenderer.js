@@ -718,12 +718,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 	 * @param {boolean} updateStyle 是否更新像素
 	 */
 	this.setSize = function ( width, height, updateStyle ) {
-
+		//画布的 宽 高 像素数 被更新 相应的，viewport也要更新 因为现在是想那啥，呃呃，渲染到完整的画布之中
+		//ratina显示器的devicePixelRatio iphone4 是4， iphone是9 似乎
 		_canvas.width = width * this.devicePixelRatio;
 		_canvas.height = height * this.devicePixelRatio;
 
 		if ( updateStyle !== false ) {
-
+			//style通常并不与画布的实际像素数相等，这里作者似乎想让其相等，像素数通常小于实际画布宽高，让gpu去缩放，性能上好
 			_canvas.style.width = width + 'px';
 			_canvas.style.height = height + 'px';
 

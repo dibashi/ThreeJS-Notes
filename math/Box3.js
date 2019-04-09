@@ -8,19 +8,21 @@
  * @param {THREE.Vector3} max	未定义则为无穷小
  * @constructor
  */
+
+ //本质：拥有两个向量的对象，两个极端角可组成一个长方体
 THREE.Box3 = function ( min, max ) {
 	/**
 	 * @desc 最小值
 	 * @default ( Infinity, Infinity, Infinity )
 	 * @type {THREE.Vector3}
 	 */
-	this.min = ( min !== undefined ) ? min : new THREE.Vector3( Infinity, Infinity, Infinity );
+	this.min = ( min !== undefined ) ? min : new THREE.Vector3( Infinity, Infinity, Infinity );//先给他来个无限大，之后比较然后更新
 	/**
 	 * @desc 最大值
 	 * @default ( -Infinity, -Infinity, -Infinity )
 	 * @type {THREE.Vector3}
 	 */
-	this.max = ( max !== undefined ) ? max : new THREE.Vector3( - Infinity, - Infinity, - Infinity );
+	this.max = ( max !== undefined ) ? max : new THREE.Vector3( - Infinity, - Infinity, - Infinity );//先给他来个无限小，之后比较然后更新
 
 };
 
@@ -46,6 +48,7 @@ THREE.Box3.prototype = {
 	 * @param {THREE.Vector3[]} points
 	 * @returns {THREE.Box3}
 	 */
+	//精妙，可以实现的如此简洁 先置空，然后遍历所有点，刷新 min max
 	setFromPoints: function ( points ) {
 
 		this.makeEmpty();
@@ -68,13 +71,13 @@ THREE.Box3.prototype = {
 	 */
 	setFromCenterAndSize: function () {
 
-		var v1 = new THREE.Vector3();
+		var v1 = new THREE.Vector3();//为什么要使用闭包？难道是为了缓存这个变量？为了性能？
 
 		return function ( center, size ) {
 
 			var halfSize = v1.copy( size ).multiplyScalar( 0.5 );
 
-			this.min.copy( center ).sub( halfSize );
+			this.min.copy( center ).sub( halfSize );//妙极！这样的代码我什么时候可以写出来
 			this.max.copy( center ).add( halfSize );
 
 			return this;
@@ -96,11 +99,12 @@ THREE.Box3.prototype = {
 		var v1 = new THREE.Vector3();
 
 		return function ( object ) {
-
+			//实现思路，我要计算object的包围框，还要包含他的子对象，并且这个包围框是世界坐标系下的包围框
+			//ok，那么先都进行世界坐标变换，然后遍历 比较，存入over；
 			var scope = this;
 
 			object.updateMatrixWorld( true );
-
+			//先置为默认，准备操作
 			this.makeEmpty();
 
 			object.traverse( function ( node ) {
@@ -123,7 +127,9 @@ THREE.Box3.prototype = {
 
 						}
 
-					} else if ( geometry instanceof THREE.BufferGeometry && geometry.attributes[ 'position' ] !== undefined ) {
+					} 
+					//这一部分先无视，将来threejs的核心应该向BufferGeometry靠拢，代码虽然没看，但肯定是为了性能，目前的geometry过分封装了
+					else if ( geometry instanceof THREE.BufferGeometry && geometry.attributes[ 'position' ] !== undefined ) {
 
 						var positions = geometry.attributes[ 'position' ].array;
 
@@ -153,7 +159,7 @@ THREE.Box3.prototype = {
 	 * @param {THREE.Box3} box
 	 * @returns {THREE.Box3}
 	 */
-	copy: function ( box ) {
+	copy: function ( box ) { //为什么不放到clone函数？是因为兼容？
 
 		this.min.copy( box.min );
 		this.max.copy( box.max );
@@ -191,6 +197,7 @@ THREE.Box3.prototype = {
 	 */
 	center: function ( optionalTarget ) {
 
+		//这种写法 还是很妙的
 		var result = optionalTarget || new THREE.Vector3();
 		return result.addVectors( this.min, this.max ).multiplyScalar( 0.5 );
 
@@ -203,7 +210,7 @@ THREE.Box3.prototype = {
 	size: function ( optionalTarget ) {
 
 		var result = optionalTarget || new THREE.Vector3();
-		return result.subVectors( this.max, this.min );
+		return result.subVectors( this.max, this.min );//哦哦 原来这就是传说中的size，搞的很神秘一样。
 
 	},
 	/**
@@ -237,7 +244,7 @@ THREE.Box3.prototype = {
 	 * @param {float} scalar
 	 * @returns {THREE.Box3}
 	 */
-	expandByScalar: function ( scalar ) {
+	expandByScalar: function ( scalar ) {//还必须一样了？。。
 
 		this.min.addScalar( - scalar );
 		this.max.addScalar( scalar );
@@ -274,7 +281,7 @@ THREE.Box3.prototype = {
 			 ( this.min.y <= box.min.y ) && ( box.max.y <= this.max.y ) &&
 			 ( this.min.z <= box.min.z ) && ( box.max.z <= this.max.z ) ) {
 
-			return true;
+			return true;//6个必须 充分且必要
 
 		}
 
@@ -290,7 +297,7 @@ THREE.Box3.prototype = {
 	getParameter: function ( point, optionalTarget ) {
 
 		// This can potentially have a divide by zero if the box
-		// has a size dimension of 0.
+		// has a size dimension of 0.//确实可能被0除，那也是用户问题
 
 		var result = optionalTarget || new THREE.Vector3();
 
@@ -314,7 +321,7 @@ THREE.Box3.prototype = {
 		     box.max.y < this.min.y || box.min.y > this.max.y ||
 		     box.max.z < this.min.z || box.min.z > this.max.z ) {
 
-			return false;
+			return false;//目测是对的，需要数学证明，当然了这是作者的事情
 
 		}
 
@@ -339,12 +346,12 @@ THREE.Box3.prototype = {
 	 * @param {THREE.Vector3} point
 	 * @return {THREE.Vector3}
 	 */
-	distanceToPoint: function () {
+	distanceToPoint: function () {//经过搜索很多核心类用到了这个函数，我以为没什么用呢 如Frustum,Plane,Ray,Sphere,PointCloud
 
 		var v1 = new THREE.Vector3();
 
 		return function ( point ) {
-
+			//先把这个点弄到这个范围内？为什么？然后与这个点求距离？若在就是0，若不在那怕是要比较大了，具体意思以后再分析
 			var clampedPoint = v1.copy( point ).clamp( this.min, this.max );
 			return clampedPoint.sub( point ).length();
 
@@ -366,7 +373,7 @@ THREE.Box3.prototype = {
 			var result = optionalTarget || new THREE.Sphere();
 
 			result.center = this.center();
-			result.radius = this.size( v1 ).length() * 0.5;
+			result.radius = this.size( v1 ).length() * 0.5;//呃呃，妙就一个字
 
 			return result;
 
@@ -378,7 +385,7 @@ THREE.Box3.prototype = {
 	 * @param {THREE.Box3} box
 	 * @returns {THREE.Box3}
 	 */
-	intersect: function ( box ) {
+	intersect: function ( box ) {//这会我的头很晕，以后详细分析，需要证明的,好消息是引擎中没有用过这个函数一次
 
 		this.min.max( box.min );
 		this.max.min( box.max );
@@ -391,7 +398,7 @@ THREE.Box3.prototype = {
 	 * @param {THREE.Box3} box
 	 * @returns {THREE.Box3}
 	 */
-	union: function ( box ) {
+	union: function ( box ) {//范围又大了
 
 		this.min.min( box.min );
 		this.max.max( box.max );
@@ -420,7 +427,7 @@ THREE.Box3.prototype = {
 
 		return function ( matrix ) {
 
-			// NOTE: I am using a binary pattern to specify all 2^3 combinations below
+			// NOTE: I am using a binary pattern to specify all 2^3 combinations below <---你真聪明，但是根据源码，这里有可能放大了包围盒，因为包围盒是轴对齐的
 			points[ 0 ].set( this.min.x, this.min.y, this.min.z ).applyMatrix4( matrix ); // 000
 			points[ 1 ].set( this.min.x, this.min.y, this.max.z ).applyMatrix4( matrix ); // 001
 			points[ 2 ].set( this.min.x, this.max.y, this.min.z ).applyMatrix4( matrix ); // 010

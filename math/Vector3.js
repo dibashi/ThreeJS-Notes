@@ -554,6 +554,7 @@ THREE.Vector3.prototype = {
 	 */
 	min: function ( v ) {
 
+		//所有分量都替换为最小的。 这个函数目前在box3中使用过
 		if ( this.x > v.x ) {
 
 			this.x = v.x;
@@ -614,7 +615,7 @@ THREE.Vector3.prototype = {
 	clamp: function ( min, max ) {
 
 		// This function assumes min < max, if this assumption isn't true it will not operate correctly
-
+		//问题在于用户需要提前确定吗？对，他们必须知道，而且阅读了源码
 		if ( this.x < min.x ) {
 
 			this.x = min.x;
@@ -991,7 +992,7 @@ THREE.Vector3.prototype = {
 	 * @param {THREE.Vector3} v
 	 * @returns {float}
 	 */
-	distanceToSquared: function ( v ) {
+	distanceToSquared: function ( v ) {//性能好点，用于比较 比开方快很多
 
 		var dx = this.x - v.x;
 		var dy = this.y - v.y;

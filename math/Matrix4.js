@@ -892,7 +892,7 @@ THREE.Matrix4.prototype = {
 	 * @desc 获取缩放比例的最大值
 	 * @returns {float}
 	 */
-	getMaxScaleOnAxis: function () {
+	getMaxScaleOnAxis: function () {//Sphere.js那里用到了
 
 		var te = this.elements;
 
