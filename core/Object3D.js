@@ -9,6 +9,33 @@
  * @desc Object3D是场景中图形对象的基类.Object3D对象主要是对象的矩阵变换，父子关系维护等功能
  * @constructor
  */
+
+ /**
+  * 
+  * 世界矩阵world matrix (或者有时被成为模型矩阵model matrix)
+
+转换模型顶点到世界空间的矩阵
+
+相机矩阵camera matrix
+
+代表相机在世界空间中位置的矩阵。另一种说法是相机的世界矩阵。
+
+视图矩阵view matrix
+
+把世界空间中所有东西移到相机前。这是相机矩阵的逆。
+
+投影矩阵projection matrix
+
+矩阵转换视锥体空间到裁剪空间或者一些正交空间到裁剪空间。 另一种说法是你的矩阵数学库透视函数perspective和正交函数ortho或者 orthographic返回的矩阵。
+
+本地矩阵local matrix
+
+当使用场景图时，本地矩阵是是某一节点和其他节点相乘之前的矩阵。
+//这里 three.js 的命名规范并不是非常的严谨
+  * 
+  * 
+  * 
+  */
 THREE.Object3D = function () {
 	/**
 	 * @desc Object3D的引用计数

@@ -18,6 +18,8 @@
  * @param {*} parameters 参数<br />
  * @constructor
  */
+//ctrl + k      ctrl + 0 ;折叠代码
+//ctrl +k      ctrl + J ; 展开代码
 THREE.WebGLRenderer = function ( parameters ) {
 
 	console.log( 'THREE.WebGLRenderer', THREE.REVISION );

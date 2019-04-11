@@ -17,6 +17,10 @@ THREE.Camera = function () {
 	 */
 	this.type = 'Camera';
 	/**
+	 * 
+	 * viewMatrix = inverse(cameraMatrix)
+	 */
+	/**
 	 * @desc 这是matrixWorld的逆矩阵,matrixWorld包含相机在世界坐标系的变换矩阵
 	 * @type {THREE.Matrix4}
 	 */

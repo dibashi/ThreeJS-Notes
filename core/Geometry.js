@@ -62,6 +62,10 @@ THREE.Geometry = function () {
 	 * 以下是蒙皮动画算法中需要用到的数据，比较复杂，以后研究透了来写！
 	 */
 	/**
+	 * 
+	 * https://webgl2fundamentals.org/webgl/lessons/zh_cn/webgl-skinning.html极好的文章
+	 */
+	/**
 	 * @desc 变形顶点数组,每个变形顶点都是一个javascript对象<br />
 	 * { name: "targetName", vertices: [ new THREE.Vector3(), ... ] }
 	 * @type {Array}
@@ -187,6 +191,7 @@ THREE.Geometry.prototype = {
 	 //奇怪，这些为什么不放在着色器中去计算？ 估计是为了本地变换几何体，这个矩阵并不想作为他的模型矩阵？
 	applyMatrix: function ( matrix ) {
 		// normalMatrix是参数matrix左上角3×3矩阵的逆转置矩阵，该矩阵用来旋转矢量（法线，而不是顶点坐标）
+		//worldInverseTranpose = transpose(inverse(world))
 		var normalMatrix = new THREE.Matrix3().getNormalMatrix( matrix );
 
 		// 遍历vertices数组，对每个顶点做矩阵变换
