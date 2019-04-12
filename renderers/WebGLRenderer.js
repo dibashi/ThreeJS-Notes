@@ -4750,6 +4750,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * 这个函数可以揭开three.js的神秘面纱，根据材质对象，选择相应的着色器。
+	 * 如果用户的材质对象没有用内置的。则用用户自己提供的着色器
+	 */
 	// Materials
 	/**
 	 * @desc 初始化材质对象
@@ -4759,7 +4763,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	 * @param {THREE.Object3D} object 3D对象
 	 */
 	function initMaterial( material, lights, fog, object ) {
-
+		
 		material.addEventListener( 'dispose', onMaterialDispose );
 
 		var shaderID;
